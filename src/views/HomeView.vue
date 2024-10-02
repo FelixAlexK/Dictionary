@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Save, Plus, ArrowRight, Check } from 'lucide-vue-next'
+import { Save, Plus, ArrowRight, Check, Trash } from 'lucide-vue-next'
 import languages from '@cospired/i18n-iso-languages'
 import { ref, watch, watchEffect } from 'vue';
 import enLocale from '@cospired/i18n-iso-languages/langs/en.json';
 import { api } from '../../convex/_generated/api';
-import { useConvexQuery, useConvexMutation, ConvexQuery } from "@convex-vue/core";
+import { useConvexQuery, useConvexMutation, ConvexQuery, } from "@convex-vue/core";
+import type { Id } from '../../convex/_generated/dataModel';
 
 languages.registerLocale(enLocale);
 const fromLanguage = ref('')
@@ -27,12 +28,24 @@ const { error: addEntryError, isLoading: addEntryLoading, mutate: addEntry } = u
         console.error('Error creating entry', error)
     }
 });
+const { error: deleteEntryError, isLoading: deleteEntryLoading, mutate: deleteEntry } = useConvexMutation(api.entries.deleteEntry, {
+    onSuccess: () => {
+        console.log('Entry deleted')
+    },
+    onError: (error) => {
+        console.error('Error creating entry', error)
+    }
+});
 
 
 
 
 const createEntry = async () => {
     await addEntry({ originalLanguage: fromLanguage.value, originalText: originalText.value, translatedLanguage: toLanguage.value, translatedText: translatedText.value })
+}
+
+const removeEntry = async (id: Id<'entries'>) => {
+    await deleteEntry({ id: id })
 }
 
 watchEffect(() => searchInput.value)
@@ -63,9 +76,9 @@ watchEffect(() => searchInput.value)
                                 v-for="(lang, index) in langs" :key="index">{{
                                     lang }}</option>
                         </select>
-                        <input v-model="originalText"
+                        <input :disabled="fromLanguage === ''" v-model="originalText"
                             class="border rounded p-2 focus:ring-2 focus:ring-black ring-offset-2"
-                            :placeholder="`Enter ${fromLanguage.charAt(0).toUpperCase() + fromLanguage.slice(1)} word or sentence`"
+                            :placeholder="fromLanguage !== '' ? `Enter ${fromLanguage.charAt(0).toUpperCase() + fromLanguage.slice(1)} word or sentence` : 'Select language first'"
                             type="text">
                         <label class="pt-4" for="to-language">To:</label>
                         <select v-model="toLanguage" id="to-language"
@@ -75,12 +88,13 @@ watchEffect(() => searchInput.value)
                                 v-for="(lang, index) in langs" :key="index">{{
                                     lang }}</option>
                         </select>
-                        <input v-model="translatedText"
+                        <input :disabled="toLanguage === ''" v-model="translatedText"
                             class="border rounded p-2 focus:ring-2 focus:ring-black ring-offset-2"
-                            :placeholder="`Enter ${toLanguage.charAt(0).toUpperCase() + toLanguage.slice(1)} translation`"
+                            :placeholder="toLanguage !== '' ? `Enter ${toLanguage.charAt(0).toUpperCase() + toLanguage.slice(1)} translation` : 'Select language first'"
                             type="text">
                         <Transition mode="out-in">
-                            <Button v-if="!addEntrySuccess" :disabled="addEntryLoading"
+                            <Button v-if="!addEntrySuccess"
+                                :disabled="addEntryLoading && fromLanguage === '' || toLanguage === ''"
                                 class="bg-black text-base p-2 text-white rounded flex flex-row items-center gap-2 justify-center hover:bg-black/90 focus:ring-2 focus:ring-black ring-offset-2 transition-colors duration-500"
                                 type="submit">
                                 <Plus :size="20"></Plus>Add Entry
@@ -112,25 +126,40 @@ watchEffect(() => searchInput.value)
 
 
                     <ConvexQuery :query="api.entries.searchEntries" :args="{ search: searchInput }">
-                        <template #loading></template>
+                        <template #loading>loading entries...</template>
                         <template #error></template>
                         <template #empty><span>No entries yet. Add your first word or sentence
                                 above!</span></template>
                         <template #default="{ data: entries }">
 
-                            <div class="mb-6 border border-gray-200 rounded px-8 py-4 shadow flex flex-col items-center justify-center w-full"
+                            <div class="group mb-6 border border-gray-200 rounded px-8 py-4 shadow flex flex-col items-center justify-center w-full"
                                 v-for="(entry, index) in entries" :key="index">
                                 <div
-                                    class="flex flex-row items-center gap-2 justify-start w-full mb-4 text-gray-500 text-sm">
-                                    <p class="capitalize  ">{{ entry.originalLanguage }}</p>
-                                    <ArrowRight class="size-4"></ArrowRight>
-                                    <p class="capitalize  ">{{ entry.translatedLanguage }}</p>
+                                    class="flex flex-row items-center  justify-between w-full mb-4 text-gray-500 text-sm">
+                                    <div class="flex gap-2 items-center">
+
+                                        <p class="capitalize  ">{{ entry.originalLanguage }}</p>
+                                        <ArrowRight class="size-4"></ArrowRight>
+                                        <p class="capitalize  ">{{ entry.translatedLanguage }}</p>
+                                    </div>
+
+                                    <div>
+                                        <time>{{ new Date(entry._creationTime).toLocaleDateString() }}</time>
+                                    </div>
                                 </div>
                                 <div
                                     class="w-full flex flex-col justify-center items-start gap-2 text-base font-medium">
                                     <p>{{ entry.originalText }}</p>
                                     <div class="border border-gray-300 w-full"></div>
+
+
                                     <p>{{ entry.translatedText }}</p>
+                                </div>
+                                <div class="flex flex-row items-center justify-end w-full mt-4">
+
+                                    <Trash @click="removeEntry(entry._id)"
+                                        class="cursor-pointer size-4 invisible group-hover:visible group-hover:text-red-500">
+                                    </Trash>
                                 </div>
                             </div>
 
