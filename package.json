@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@convex-vue/core": "^0.0.4",
+    "@cospired/i18n-iso-languages": "^4.2.0",
     "@vueuse/core": "^11.1.0",
     "convex": "^1.16.2",
+    "lucide-vue-next": "^0.446.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
