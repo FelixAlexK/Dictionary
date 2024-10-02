@@ -29,22 +29,29 @@ export const getEntries = query({
 export const searchEntries = query({
   args: { search: v.string() },
   handler: async (ctx, args) => {
-    const searchOrigLangResults = await ctx.db
-      .query('entries')
-      .withSearchIndex('search_origLang', (q) => q.search('originalLanguage', args.search))
-      .take(10)
-    const searchOrigTextResults = await ctx.db
-      .query('entries')
-      .withSearchIndex('search_origText', (q) => q.search('originalText', args.search))
-      .take(10)
-    const searchTransLangResults = await ctx.db
-      .query('entries')
-      .withSearchIndex('search_transLang', (q) => q.search('translatedLanguage', args.search))
-      .take(10)
-    const searchTransTextResults = await ctx.db
-      .query('entries')
-      .withSearchIndex('search_transText', (q) => q.search('translatedText', args.search))
-      .take(10)
+    const [
+      searchOrigLangResults,
+      searchOrigTextResults,
+      searchTransLangResults,
+      searchTransTextResults
+    ] = await Promise.all([
+      ctx.db
+        .query('entries')
+        .withSearchIndex('search_origLang', (q) => q.search('originalLanguage', args.search))
+        .take(10),
+      ctx.db
+        .query('entries')
+        .withSearchIndex('search_origText', (q) => q.search('originalText', args.search))
+        .take(10),
+      ctx.db
+        .query('entries')
+        .withSearchIndex('search_transLang', (q) => q.search('translatedLanguage', args.search))
+        .take(10),
+      ctx.db
+        .query('entries')
+        .withSearchIndex('search_transText', (q) => q.search('translatedText', args.search))
+        .take(10)
+    ])
 
     const searchResults = [
       ...searchOrigLangResults,
@@ -54,9 +61,16 @@ export const searchEntries = query({
     ]
 
     if (searchResults.length === 0) {
-      return await ctx.db.query('entries').collect()
+      return await ctx.db.query('entries').order('desc').collect()
     }
 
     return searchResults
+  }
+})
+
+export const deleteEntry = mutation({
+  args: { id: v.id('entries') },
+  handler: async (ctx, args) => {
+    return await ctx.db.delete(args.id)
   }
 })
