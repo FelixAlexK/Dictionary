@@ -1,5 +1,7 @@
+import { paginationOptsValidator } from 'convex/server'
 import { mutation, query } from './_generated/server'
 import { v } from 'convex/values'
+import { trace } from 'console'
 
 export const createEntry = mutation({
   args: {
@@ -21,8 +23,21 @@ export const createEntry = mutation({
 })
 
 export const getEntries = query({
-  handler: async (ctx) => {
-    return await ctx.db.query('entries').collect()
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const results = await ctx.db.query('entries').paginate(args.paginationOpts)
+
+    return {
+      ...results,
+      page: results.page.map((result) => ({
+        _id: result._id,
+        _creationTime: result._creationTime,
+        originalText: result.originalText,
+        originalLanguage: result.originalLanguage,
+        translatedText: result.translatedText,
+        translatedLanguage: result.translatedLanguage
+      }))
+    }
   }
 })
 
@@ -59,10 +74,6 @@ export const searchEntries = query({
       ...searchTransLangResults,
       ...searchTransTextResults
     ]
-
-    if (searchResults.length === 0) {
-      return await ctx.db.query('entries').order('desc').collect()
-    }
 
     return searchResults
   }
