@@ -1,6 +1,7 @@
 import { paginationOptsValidator } from 'convex/server'
 import { mutation, query } from './_generated/server'
 import { v } from 'convex/values'
+import { trace } from 'console'
 
 export const createEntry = mutation({
   args: {
