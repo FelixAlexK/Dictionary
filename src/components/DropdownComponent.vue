@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps<{
     options: { id: number; label: string }[];
-    disabled: boolean;
+
 }>();
 
 
@@ -40,7 +40,7 @@ const closeDropdown = () => {
 
 <template>
     <div class="relative ">
-        <input :disabled="disabled" type="text" v-model="searchQuery" @focus="isOpen = true" @blur="closeDropdown"
+        <input type="text" v-model="searchQuery" @focus="isOpen = true" @blur="closeDropdown"
             placeholder="Search language..."
             class="border rounded p-2 focus:ring-2 focus:ring-black ring-offset-2 w-full" />
 
