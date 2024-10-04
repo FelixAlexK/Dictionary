@@ -29,7 +29,7 @@
                         <Plus :size="20"></Plus>Add Entry
                     </Button>
                     <Button v-else disabled
-                        class="bg-green-500 text-base p-2 text-white rounded flex flex-row items-center gap-2 justify-center focus:ring-2 focus:ring-black ring-offset-2 transition-colors duration-500">
+                        class="bg-green-500 text-base p-2 text-white rounded flex flex-row items-center gap-2 justify-center focus:ring-2 focus:ring-black ring-offset-2 transition-colors">
                         <Check :size="20"></Check>Add Entry
                     </Button>
                 </Transition>
@@ -77,5 +77,8 @@ const createEntry = () => {
         translatedLanguage: toLanguage.value.label,
         translatedText: translatedText.value,
     });
+
+    originalText.value = '';
+    translatedText.value = '';
 };
 </script>
