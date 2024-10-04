@@ -4,18 +4,14 @@
         <div class="mt-4">
             <form @submit.prevent="createEntry" class="flex flex-col space-y-4">
                 <label for="from-language">From:</label>
-                <Dropdown
-                    :disabled="fromLanguage?.label.toLowerCase() === toLanguage?.label && fromLanguage?.label !== undefined"
-                    :options="langOptions" @select="handleSelectFromLang">
+                <Dropdown :options="filteredLangOptions" @select="handleSelectFromLang">
                 </Dropdown>
-                <input :disabled="fromLanguage?.label === undefined" v-model="originalText"
+                <input :disabled="fromLanguage?.label === undefined"
                     class="border rounded p-2 focus:ring-2 focus:ring-black ring-offset-2"
                     :placeholder="fromLanguage?.label !== undefined ? `Enter ${fromLanguage?.label} word or sentence` : 'Select language first'"
                     type="text">
                 <label class="pt-4" for="to-language">To:</label>
-                <Dropdown
-                    :disabled="toLanguage?.label.toLowerCase() === fromLanguage?.label && toLanguage?.label !== undefined"
-                    :options="langOptions" @select="handleSelectToLang">
+                <Dropdown :options="filteredLangOptions" @select="handleSelectToLang">
                 </Dropdown>
                 <input :disabled="toLanguage?.label === undefined" v-model="translatedText"
                     class="border rounded p-2 focus:ring-2 focus:ring-black ring-offset-2"
@@ -65,6 +61,10 @@ const handleSelectFromLang = (option: { id: number; label: string }) => {
 const handleSelectToLang = (option: { id: number; label: string }) => {
     toLanguage.value = option;
 };
+
+const filteredLangOptions = computed(() => {
+    return props.langOptions.filter(option => option.id !== fromLanguage.value?.id && option.id !== toLanguage.value?.id);
+});
 
 const createEntry = () => {
     if (fromLanguage.value?.label === undefined || toLanguage.value?.label === undefined) {
