@@ -24,7 +24,7 @@ export const createEntry = mutation({
 export const getEntries = query({
   args: { paginationOpts: paginationOptsValidator },
   handler: async (ctx, args) => {
-    const results = await ctx.db.query('entries').paginate(args.paginationOpts)
+    const results = await ctx.db.query('entries').order('desc').paginate(args.paginationOpts)
 
     return {
       ...results,
