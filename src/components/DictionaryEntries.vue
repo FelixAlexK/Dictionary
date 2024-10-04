@@ -1,7 +1,7 @@
 <template>
     <div class="mb-6 border border-gray-200 rounded px-8 py-4 shadow">
         <div class="flex flex-row items-center justify-between">
-            <h2 class="font-semibold text-base">Dictionary Entries</h2>
+            <h2 class="font-semibold text-base mr-2">Dictionary Entries</h2>
             <input v-model="searchInput" placeholder="search dictionary"
                 class="border rounded p-2 focus:ring-2 focus:ring-black ring-offset-2" type="search" name="" id="">
         </div>
@@ -29,14 +29,15 @@
                             <div class="group mb-6 border border-gray-200 rounded px-8 py-4 shadow flex flex-col items-center justify-center w-full"
                                 v-for="(entry, index) in entries" :key="index">
                                 <div
-                                    class="flex flex-row items-center justify-between w-full mb-4 text-gray-500 text-sm">
-                                    <div class="flex gap-2 items-center">
+                                    class="flex flex-row items-center justify-between w-full mb-4 text-gray-500 text-sm shrink">
+                                    <div class="flex gap-2 items-center mr-2">
                                         <p class="capitalize">{{ entry.originalLanguage }}</p>
                                         <ArrowRight class="size-4"></ArrowRight>
                                         <p class="capitalize">{{ entry.translatedLanguage }}</p>
                                     </div>
                                     <div>
-                                        <time>{{ new Date(entry._creationTime).toLocaleDateString() }}</time>
+                                        <time>{{ new
+                                            Date(entry._creationTime).toLocaleDateString() }}</time>
                                     </div>
                                 </div>
                                 <div
@@ -67,6 +68,34 @@
                         </template>
                     </ConvexPaginatedQuery>
                 </template>
+                <template #default="{ data: entries }">
+                    <div class="group mb-6 border border-gray-200 rounded px-8 py-4 shadow flex flex-col items-center justify-center w-full"
+                        v-for="(entry, index) in entries" :key="index">
+                        <div
+                            class="flex flex-row items-center justify-between w-full mb-4 text-gray-500 text-sm shrink">
+                            <div class="flex gap-2 items-center mr-2">
+                                <p class="capitalize">{{ entry.originalLanguage }}</p>
+                                <ArrowRight class="size-4"></ArrowRight>
+                                <p class="capitalize">{{ entry.translatedLanguage }}</p>
+                            </div>
+                            <div>
+                                <time>{{ new
+                                    Date(entry._creationTime).toLocaleDateString() }}</time>
+                            </div>
+                        </div>
+                        <div class="w-full flex flex-col justify-center items-start gap-2 text-base font-medium">
+                            <p>{{ entry.originalText }}</p>
+                            <div class="border border-gray-300 w-full"></div>
+                            <p>{{ entry.translatedText }}</p>
+                        </div>
+                        <div class="flex flex-row items-center justify-end w-full mt-4">
+                            <Trash @click="removeEntry(entry._id)"
+                                class="cursor-pointer size-4 invisible group-hover:visible group-hover:text-red-500">
+                            </Trash>
+                        </div>
+                    </div>
+
+                </template>
             </ConvexQuery>
         </div>
     </div>
@@ -79,11 +108,14 @@ import { api } from '../../convex/_generated/api';
 import { useConvexMutation, ConvexQuery, ConvexPaginatedQuery } from "@convex-vue/core";
 import type { Id } from '../../convex/_generated/dataModel';
 
-const props = defineProps<{
+defineProps<{
     numberOfItems: number;
+
 }>();
 
 const searchInput = ref('');
+
+
 const { mutate: deleteEntry } = useConvexMutation(api.entries.deleteEntry, {
     onSuccess: () => {
         console.log('Entry deleted');
@@ -100,4 +132,8 @@ const removeEntry = async (id: Id<'entries'>) => {
     }
     await deleteEntry({ id: id });
 };
+
+
+
+
 </script>
