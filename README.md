@@ -1,39 +1,76 @@
-# dictionary
+# Dictionary App
 
-This template should help get you started developing with Vue 3 in Vite.
+A Vue.js application for managing a dictionary of translations between different languages. Users can add new entries, search for existing entries, and delete entries.
 
-## Recommended IDE Setup
+## Table of Contents
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Components](#components)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Type Support for `.vue` Imports in TS
+## Features
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- Add new dictionary entries with translations.
+- Search for existing entries.
+- Delete entries.
+- Responsive design.
 
-## Customize configuration
+## Installation
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+1. **Clone the repository:**
 
-## Project Setup
+   ```bash
+   git clone https://github.com/FelixAlexK/Dictionary.git
+   cd Dictionary
+   ```
 
-```sh
-bun install
-```
+2. **Install dependencies:**
 
-### Compile and Hot-Reload for Development
+   ```bash
+   bun install
+   ```
 
-```sh
-bun dev
-```
 
-### Type-Check, Compile and Minify for Production
 
-```sh
-bun build
-```
+## Usage
 
-### Lint with [ESLint](https://eslint.org/)
+1. **Start the development server:**
 
-```sh
-bun lint
-```
+   ```bash
+   bun dev
+   ```
+
+2. **Start Convex:**
+
+   ```bash
+   bunx convex dev
+   ```
+
+3. **Open your browser and navigate to:**
+
+   ```
+   http://localhost:5173/
+   ```
+
+3. **Add a new entry:**
+
+   - Select the source language.
+   - Enter the text in the source language.
+   - Select the target language.
+   - Enter the translation.
+   - Click "Add Entry".
+
+4. **Search for entries:**
+
+   - Use the search bar to filter entries by text.
+
+5. **Delete an entry:**
+
+   - Click the trash icon next to the entry you want to delete.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
